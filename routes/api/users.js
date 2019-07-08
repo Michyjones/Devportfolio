@@ -3,8 +3,10 @@ const router = express.Router();
 const { check, validationResult } = require('express-validator/check');
 const gravatar = require('gravatar');
 const bycrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const User = require('../../model/User');
+const config = require('config');
 
 router.post(
   '/',
@@ -24,32 +26,45 @@ router.post(
     }
 
     const { name, email, password } = req.body;
-    try{
-        let user = await User.findOne({email});
-        if(user){
-            return res.status(409).json({errors:[{msg:'User already exists'}]});
+    try {
+      let user = await User.findOne({ email });
+      if (user) {
+        return res
+          .status(409)
+          .json({ errors: [{ msg: 'User already exists' }] });
+      }
+      const avatar = gravatar.url(email, {
+        s: '200',
+        r: 'pg',
+        d: 'mm'
+      });
+      user = new User({
+        name,
+        email,
+        password,
+        avatar
+      });
+
+      const salt = await bycrypt.genSalt(10);
+      user.password = await bycrypt.hash(password, salt);
+      await user.save();
+
+      const payload = {
+        user: {
+          id: user.id
         }
-        const avatar = gravatar.url(email,{
-            s:'200',
-            r:'pg',
-            d:'mm'
-        });
-        user = new User({
-            name,email,password,avatar
-        });
+      };
+      jwt.sign(payload, config.get('secretKey'),
+    {expiresIn:360000}, (error, token) => {
+      if(error) throw error;
+      res.send({token});
+    });
 
-        const salt = await bycrypt.genSalt(10);
-        user.password = await bycrypt.hash(password, salt);
-        await user.save();
-
-        res.send('User Registed Successfully');
-
-    }catch(err){
-        console.log(err.message);
-        res.status(500).send('InternalServer Error');
-
+      // res.send('User Registed Successfully');
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).send('InternalServer Error');
     }
-    
   }
 );
 
