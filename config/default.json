@@ -1,0 +1,4 @@
+{
+    "mongoURI": "mongodb+srv://Mickey:nevermind123@cluster0-eafwd.mongodb.net/test?retryWrites=true&w=majority",
+    "secretKey":"thisismylifenevermind"
+}
