@@ -20,7 +20,7 @@ const ProfileSchema = new mongoose.Schema({
         required: true
     },
     skills:{
-        type[String],
+        type:[String],
         required: true
     },
     bio:{
@@ -35,8 +35,7 @@ const ProfileSchema = new mongoose.Schema({
             title:{
                 type: String
             },
-            company:
-            {
+            company:{
                 type: String
             },
             location:{
@@ -50,7 +49,7 @@ const ProfileSchema = new mongoose.Schema({
                 type: Date,
             },
             current: {
-                type: boolean,
+                type: Boolean,
                 default: false
             },
             description:{
@@ -80,7 +79,7 @@ const ProfileSchema = new mongoose.Schema({
                 type: Date,
             },
             current: {
-                type: boolean,
+                type: Boolean,
                 default: false
             },
             description:{
